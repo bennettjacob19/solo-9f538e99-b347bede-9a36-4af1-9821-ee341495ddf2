@@ -1,0 +1,22 @@
+services:
+  partition-disk:
+    build: .
+    image: partition-disk-drill:latest
+    container_name: partition-disk-drill
+    ports:
+      - "8000:8000"
+    environment:
+      # 每个物理区的槽位数（= 每个逻辑组的块数）
+      SLOTS_PER_REGION: "8"
+      # 每条块数据的固定字节数
+      BLOCK_SIZE: "16"
+      DB_PATH: "/data/partition.db"
+      # 搬迁步间延迟（秒），方便在 /docs 观察半搬迁状态；生产可设为 0
+      MIGRATION_STEP_DELAY: "0.05"
+      ENABLE_ADMIN: "1"
+    volumes:
+      - partition-data:/data
+    restart: unless-stopped
+
+volumes:
+  partition-data:
